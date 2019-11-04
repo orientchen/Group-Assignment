@@ -1,0 +1,90 @@
+SELECT product_code, product_name, list_price, discount_percent
+FROM products
+order by list_price DESC;
+
+select concat(last_name, ', ', first_name) as full_name 
+from customers	
+where last_name >= 'M%'
+order by last_name ASC;
+
+select product_name, list_price, date_added
+from products
+having list_price between 500 and 2000
+order by date_added desc;
+
+
+select product_name, list_price,
+	ROUND(list_price * (discount_percent/100),2) as discount_amount,
+	ROUND(list_price - list_price * (discount_percent/100),2) as discount_price
+from products
+order by discount_price desc
+limit 5;
+
+select item_id, item_price, discount_amount, quantity,
+item_price * quantity as price_total,
+discount_amount * quantity as discount_total,
+item_price - discount_amount * quantity as item_total	
+from order_items
+where (item_price - discount_amount * quantity) >500
+order by item_total desc;
+
+select order_id, order_date, ship_date
+from orders
+where ship_date = NULL;
+
+#7 ???? NOT SURE HOW TO DO
+#guess: select CONVERT(VARCHAR(11), GETDATE(), 106) AS [DD MON YYYY]);
+
+#8 create table for this one?
+drop table if exists price;
+create table price 
+(item_price		DECIMAL(7,2)	NOT NULL,
+tax_rate	DECIMAL(2,2)	NOT NULL,
+tax_amount	DECIMAL(10,2)   NOT NULL,
+total		DECIMAL(20,2)   NOT NULL);
+
+insert into price
+values( 100, .07, tax_rate*item_price, item_price+tax_amount);
+
+select item_price, tax_rate, tax_amount, total
+from price;
+
+#Part 3
+#1
+select c.category_name, p.product_name, p.list_price
+from categories c, products p
+order by c.category_name, p.product_name;
+
+#2 no way to remove white spaces from center of string?
+select c.first_name, c.last_name, a.line1, a.city, a.state, a.zip_code, 
+	concat(c.first_name, ".", c.last_name, "@yahoo.com") as email_address
+from Customers c, Addresses a;
+
+#3
+select c.first_name, c.last_name, a.line1, a.city, a.state, a.zip_code 
+from Customers c, Addresses a
+where c.shipping_address_id = a.address_id;
+
+#4
+select c.last_name, c.first_name, o.order_date, p.product_name, oi.item_price, oi.discount_amount, oi.quantity
+from Customers c, Orders o, Products p, Order_items oi
+order by c.last_name, o.order_date, p.product_name;
+
+#5
+select a.product_name, a.product_id, a.list_price
+from Products a, products b
+where a.product_id != b.product_id
+and a.list_price = b.list_price
+order by a.product_name;
+
+#6 no results?
+select c.category_name, p.product_id
+from categories c right outer join products p on c.category_id = p.category_id
+where p.product_id = NULL
+group by category_name;
+
+
+
+
+
+
